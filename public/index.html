@@ -30,6 +30,8 @@
             padding: 24px;
             -webkit-font-smoothing: antialiased;
             transition: background 0.8s ease, color 0.8s ease;
+            position: relative;
+            z-index: 1;
         }
 
         .progress-bar {
@@ -41,6 +43,7 @@
             transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 100;
             box-shadow: 0 0 8px rgba(26, 86, 219, 0.4);
+            pointer-events: none;
         }
 
         body.dark { background: var(--dark); color: var(--white); }
@@ -117,6 +120,7 @@
             user-select: none;
             touch-action: manipulation;
             animation: breathe 3s ease-in-out infinite;
+            pointer-events: auto;
         }
         .candidate-card:nth-child(2) { animation-delay: 0.5s; }
         .candidate-card:hover { border-color: var(--primary); background: #eff6ff; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(26, 86, 219, 0.12); }
@@ -130,6 +134,7 @@
             font-size: 15px; font-weight: 600; border: none; cursor: pointer;
             transition: all 0.2s ease; width: 100%; max-width: 300px; margin-top: 8px;
             -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation;
+            pointer-events: auto;
         }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3); }
@@ -189,6 +194,7 @@
             font-size: 36px; cursor: pointer; padding: 12px; border-radius: 8px;
             background: rgba(255,255,255,0.05); border: 2px solid transparent;
             transition: all 0.2s ease; user-select: none; touch-action: manipulation;
+            pointer-events: auto;
         }
         .flag-option:hover {
             background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2);
@@ -217,7 +223,7 @@
     <div class="screen active" id="screen-welcome">
         <div class="logo">StageMatch<span style="color: var(--accent)">NL</span></div>
         <div class="logo-tagline">Connecting talent with opportunity</div>
-        <div class="badge"> Beveiligde selectieprocedure</div>
+        <div class="badge">Beveiligde selectieprocedure</div>
         <h1>Je bent geselecteerd als lid van de sollicitatiecommissie</h1>
         <p>Je neemt deel aan een <span class="highlight">definitieve selectieronde</span> voor een stageplek bij een gerenommeerde organisatie in Amsterdam.</p>
         <p style="font-size: 13px; color: var(--gray);">Dit is geen oefening. Jouw oordeel wordt meegewogen in de definitieve beslissing.</p>
@@ -229,4 +235,517 @@
 
     <div class="screen" id="screen-round1">
         <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
-        <div 
+        <div class="logo-tagline" style="margin-bottom: 16px;">Selectieronde 1 van 2</div>
+        <h1 style="font-size: 17px;">Wie nodig je uit?</h1>
+        <p style="font-size: 13px; margin-bottom: 6px;">Geen verdere informatie beschikbaar.</p>
+        <div class="candidates">
+            <div class="candidate-card" onclick="selectCandidate('lars', this)">
+                <div class="candidate-label">Kandidaat A</div>
+                <div class="candidate-name">Lars de Vries</div>
+            </div>
+            <div class="candidate-card" onclick="selectCandidate('youssef', this)">
+                <div class="candidate-label">Kandidaat B</div>
+                <div class="candidate-name">Youssef El Amrani</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="screen-loading">
+        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
+        <div style="margin-top: 32px;">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <p style="margin-top: 16px; font-size: 13px;">Resultaten ophalen...</p>
+        </div>
+    </div>
+
+    <div class="screen" id="screen-stats">
+        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
+        <div class="badge">Live resultaten</div>
+        <div class="stat-number">847</div>
+        <div class="stat-label">deelnemers vandaag</div>
+        <div class="results-container">
+            <div class="result-row">
+                <div class="result-label"><span>Lars de Vries</span><span class="highlight">68%</span></div>
+                <div class="result-bar"><div class="result-fill lars" id="larsBar" style="width: 0%"></div></div>
+            </div>
+            <div class="result-row">
+                <div class="result-label"><span>Youssef El Amrani</span><span class="highlight">32%</span></div>
+                <div class="result-bar"><div class="result-fill youssef" id="youssefBar" style="width: 0%"></div></div>
+            </div>
+        </div>
+        <p id="groupLabel" style="font-size: 13px; margin-top: 12px;"></p>
+        <button class="btn btn-primary" onclick="goToScreen('screen-twist1')">Volgende</button>
+    </div>
+
+    <div class="screen" id="screen-twist1">
+        <p class="twist-text" style="font-size: 32px; margin-bottom: 20px;" id="wachtText"></p>
+        <div id="twist1Content" style="opacity: 0; transition: opacity 0.5s ease;">
+            <div style="animation: slideUp 0.6s ease 0.3s both;">
+                <p class="twist-text">Die 847 studenten?<br><span class="accent">Bestaan niet.</span></p>
+                <div class="divider"></div>
+                <p class="twist-text">Die 68%?<br><span class="accent">Verzonnen.</span></p>
+            </div>
+            <div style="animation: slideUp 0.6s ease 0.8s both; margin-top: 20px;">
+                <p style="font-size: 14px;">Wij wilden zien wat je doet als je denkt dat de meerderheid voor Lars koos.</p>
+                <p style="font-size: 13px; color: var(--gray); margin-top: 12px;">Voelde je je bevestigd? Of juist beter dan de rest?</p>
+                <p class="twist-text" style="margin-top: 12px; font-size: 16px;">Dat was test 1.</p>
+            </div>
+            <button class="btn btn-primary" style="margin-top: 28px;" onclick="goToScreen('screen-twist2')">Ik wil verder</button>
+        </div>
+    </div>
+
+    <div class="screen" id="screen-twist2">
+        <p style="font-size: 13px; color: var(--gray); margin-bottom: 20px;">Test 2</p>
+        <div style="animation: slideUp 0.5s ease both;">
+            <p class="twist-text">
+                <span class="strikethrough">Er was geen Lars.</span><br>
+                <span class="strikethrough">Geen Youssef.</span><br>
+                <span class="strikethrough">Geen stageplek.</span><br>
+                <span class="strikethrough">Geen organisatie.</span>
+            </p>
+        </div>
+        <div class="divider" style="margin: 24px 0;"></div>
+        <div style="animation: slideUp 0.5s ease 0.5s both;">
+            <p class="twist-text" style="font-size: 18px;">Alleen <span class="accent">een naam</span>.</p>
+            <p style="font-size: 14px; margin-top: 12px; line-height: 1.7;">Geen CV. Geen foto. Geen motivatie.<br>Jouw keuze was gebaseerd op <strong>niets</strong>.</p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 28px;" onclick="goToScreen('screen-typenaam')">Lees verder</button>
+    </div>
+
+    <div class="screen" id="screen-typenaam">
+        <p style="font-size: 13px; color: var(--gray); margin-bottom: 12px;">Nu jij.</p>
+        <p class="twist-text" style="font-size: 18px;">Typ je naam of bijnaam.</p>
+        <input type="text" class="name-input" id="userFullName" placeholder="Jouw naam..." autocomplete="off" maxlength="30">
+        <p style="font-size: 12px; color: var(--gray); margin-top: -8px; margin-bottom: 16px;">(geen zorgen, dit wordt nergens opgeslagen)</p>
+        <button class="btn btn-primary" style="margin-top: 12px;" onclick="submitName()">Bevestig</button>
+    </div>
+
+    <div class="screen" id="screen-naamreveal">
+        <p style="font-size: 13px; color: var(--gray);">Stel je voor...</p>
+        <div class="name-reveal" id="displayName">—</div>
+        <p style="font-size: 15px;">staat op een CV.</p>
+        <div class="divider"></div>
+        <div style="animation: slideUp 0.5s ease 0.5s both;">
+            <p style="font-size: 14px; line-height: 1.7;">Geen foto. Geen brief. Geen cijfers.<br><strong>Alleen jouw naam.</strong></p>
+        </div>
+        <div style="animation: slideUp 0.5s ease 1s both; margin-top: 16px;">
+            <p class="twist-text" style="font-size: 20px;">Zou <strong>jij</strong> jezelf aannemen?</p>
+        </div>
+        <div class="divider"></div>
+        <div style="animation: slideUp 0.5s ease 1.5s both;">
+            <p style="font-size: 13px; color: var(--gray); font-style: italic; line-height: 1.6;">
+                Je naam is niet wie je bent.<br>Maar voor anderen is het vaak het enige wat ze zien.
+            </p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 24px;" onclick="goToScreen('screen-twist3')">Verder</button>
+    </div>
+
+    <div class="screen" id="screen-twist3">
+        <p style="font-size: 13px; color: var(--gray); margin-bottom: 6px;">Wist je dit?</p>
+        <p class="twist-text" style="font-size: 18px;">We hebben gemeten hoe lang je erover deed.</p>
+        <div style="margin-top: 20px;">
+            <div class="time-display" id="userThinkTime">—</div>
+            <div class="time-label">seconden bedenktijd</div>
+        </div>
+        <div class="divider"></div>
+        <div style="animation: slideUp 0.5s ease 0.3s both;">
+            <p style="font-size: 14px; line-height: 1.7;">
+                Voor <strong>Lars</strong>: waarschijnlijk <strong>onder de 2 seconden</strong>.<br>
+                Voor <strong>Youssef</strong>: waarschijnlijk <strong>langer</strong>. Je twijfelde.
+            </p>
+        </div>
+        <div style="animation: slideUp 0.5s ease 0.8s both; margin-top: 16px;">
+            <p class="twist-text" style="font-size: 16px;">Waarom kostte het je meer moeite?</p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 28px;" onclick="goToScreen('screen-twist4')">Verder</button>
+    </div>
+
+    <div class="screen" id="screen-twist4">
+        <p class="twist-text" style="font-size: 22px; margin-bottom: 16px;">Dat heeft het systeem jou geleerd.</p>
+        <div style="animation: slideUp 0.5s ease 0.3s both;">
+            <p style="font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 12px;">Niet jij. Het systeem.</p>
+        </div>
+        <div style="animation: slideUp 0.5s ease 0.6s both; text-align: left; width: 100%;">
+            <p style="font-size: 13px; line-height: 1.8; color: #475569;">
+                — Zat je bij de 68%? Voelde je je <strong>normaal?</strong><br>
+                — Zat je bij de 32%? Voelde je je <strong>speciaal?</strong>
+            </p>
+        </div>
+        <div class="divider"></div>
+        <div style="animation: slideUp 0.5s ease 1s both;">
+            <p style="font-size: 14px; line-height: 1.7; font-weight: 600;">
+                Institutionele discriminatie betekent:<br><br>
+                Niet één persoon is slecht.<br>
+                Het systeem is zo ontworpen dat jij deze keuze moest maken.<br><br>
+                Zonder dat je het wilde.<br>Zonder dat je het merkte.
+            </p>
+        </div>
+        <div style="animation: slideUp 0.5s ease 1.5s both; margin-top: 16px;">
+            <p class="big-reveal" id="totnuText"></p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="goToScreen('screen-round2')">Laat me het bewijzen</button>
+    </div>
+
+    <div class="screen" id="screen-round2">
+        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
+        <div class="logo-tagline" style="margin-bottom: 16px;">Selectieronde 2 van 2</div>
+        <h1 style="font-size: 17px;">Nieuwe ronde. Twee nieuwe kandidaten.</h1>
+        <p style="font-size: 13px; margin-bottom: 6px;">Weer geen verdere informatie.</p>
+        <div class="candidates">
+            <div class="candidate-card" onclick="selectCandidateRound2('sem', this)">
+                <div class="candidate-label">Kandidaat A</div>
+                <div class="candidate-name">Sem van der Berg</div>
+            </div>
+            <div class="candidate-card" onclick="selectCandidateRound2('shane', this)">
+                <div class="candidate-label">Kandidaat B</div>
+                <div class="candidate-name">Shane de Vries</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="screen-round2-result">
+        <p style="font-size: 13px; color: var(--gray); margin-bottom: 12px;">Je koos:</p>
+        <p class="twist-text" style="font-size: 22px;" id="round2Choice">—</p>
+        <div class="divider"></div>
+        <p style="font-size: 13px; color: var(--gray); margin-bottom: 6px;">Echte resultaten van deze sessie:</p>
+        <div class="results-container">
+            <div class="result-row">
+                <div class="result-label"><span>Sem van der Berg</span><span class="highlight" id="semPercentReal">—</span></div>
+                <div class="result-bar"><div class="result-fill sem" id="semBarReal" style="width: 0%"></div></div>
+            </div>
+            <div class="result-row">
+                <div class="result-label"><span>Shane de Vries</span><span class="highlight" id="shanePercentReal">—</span></div>
+                <div class="result-bar"><div class="result-fill shane" id="shaneBarReal" style="width: 0%"></div></div>
+            </div>
+        </div>
+        <p style="font-size: 12px; color: var(--gray);"><span id="realTotal">—</span> studenten stemden</p>
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="goToScreen('screen-final')">Het laatste bericht</button>
+    </div>
+
+    <div class="screen" id="screen-final">
+        <div style="animation: slideUp 0.6s ease 0.3s both;">
+            <p style="font-size: 18px; margin-bottom: 16px; font-weight: 600;">Welke afkomst denk je dat Shane heeft?</p>
+            <div class="flags-grid" id="flagsGrid">
+                <div class="flag-option" onclick="selectFlag('ma')">🇲🇦</div>
+                <div class="flag-option" onclick="selectFlag('tr')">🇹🇷</div>
+                <div class="flag-option" onclick="selectFlag('sr')">🇸🇷</div>
+                <div class="flag-option" onclick="selectFlag('nl')">🇳</div>
+            </div>
+        </div>
+
+        <div id="flagResult" style="display: none; animation: slideUp 0.6s ease;">
+            <div class="divider"></div>
+            <div id="flagResultText"></div>
+            <div style="margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <p style="font-size: 15px; line-height: 1.7; font-weight: 500;">Maar eerlijk... maakt het echt uit wat voor afkomst Shane had gehad?</p>
+            </div>
+        </div>
+
+        <div id="finalContinue" style="display: none; animation: slideUp 0.6s ease 0.3s both;">
+            <div class="divider"></div>
+            <p style="font-size: 13px; color: var(--gray); margin-bottom: 8px;">Echte resultaten van <strong>jouw klas</strong> — Ronde 1:</p>
+            <div class="results-container">
+                <div class="result-row">
+                    <div class="result-label"><span>Lars de Vries</span><span class="highlight" id="r1LarsPercentFinal">—</span></div>
+                    <div class="result-bar"><div class="result-fill lars" id="r1LarsBarFinal" style="width: 0%"></div></div>
+                </div>
+                <div class="result-row">
+                    <div class="result-label"><span>Youssef El Amrani</span><span class="highlight" id="r1YoussefPercentFinal">—</span></div>
+                    <div class="result-bar"><div class="result-fill youssef" id="r1YoussefBarFinal" style="width: 0%"></div></div>
+                </div>
+            </div>
+            <p style="font-size: 12px; color: var(--gray);"><span id="r1TotalFinal">—</span> klasgenoten stemden</p>
+            <div class="divider"></div>
+            <div style="margin-top: 8px;">
+                <p style="font-size: 14px; color: var(--gray);">
+                    Ronde 1 bedenktijd: <span id="r1TimeFinal">—</span><br>
+                    Ronde 2 bedenktijd: <span id="r2TimeFinal">—</span>
+                </p>
+                <p style="font-size: 13px; margin-top: 8px; font-style: italic;">
+                    Je bent bewust aan het denken.<br>Dat is de eerste stap.
+                </p>
+            </div>
+            <div style="margin-top: 16px;">
+                <p class="twist-text" style="font-size: 18px; font-weight: 700;">
+                    Nu je dit weet...<br>
+                    <span class="accent">wat ga jij veranderen?</span>
+                </p>
+            </div>
+        </div>
+
+        <p class="credit">designed by jayden</p>
+    </div>
+
+    <script>
+        var currentScreen = 'screen-welcome';
+        var round1Start = null;
+        var round2Start = null;
+        var round1Choice = null;
+        var round2Choice = null;
+        var round1ThinkTime = 0;
+        var round2ThinkTime = 0;
+        var userName = '';
+
+        var totalScreens = 13;
+        var darkScreens = ['screen-twist1', 'screen-twist2', 'screen-typenaam', 'screen-naamreveal', 'screen-twist3', 'screen-twist4', 'screen-final'];
+        var vibrateScreens = ['screen-twist1', 'screen-twist2', 'screen-naamreveal', 'screen-twist4', 'screen-final'];
+
+        var audioCtx = null;
+        function initAudio() {
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+        }
+        function playTone(freq, duration, volume) {
+            if (!audioCtx) return;
+            try {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(volume || 0.03, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (duration || 0.3));
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + (duration || 0.3));
+            } catch(e) {}
+        }
+        function playTwistSound() {
+            playTone(440, 0.4, 0.025);
+            setTimeout(function() { playTone(392, 0.3, 0.02); }, 150);
+        }
+        function playRevealSound() {
+            playTone(523, 0.25, 0.02);
+            setTimeout(function() { playTone(659, 0.2, 0.015); }, 100);
+        }
+        function playClickSound() {
+            playTone(800, 0.08, 0.015);
+        }
+
+        function vibrate(pattern) {
+            try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
+        }
+
+        var socket = null;
+        function initSocket() {
+            try {
+                if (typeof io !== 'undefined') {
+                    socket = io();
+                    socket.on('stats', function(stats) {
+                        if (currentScreen === 'screen-round2-result') {
+                            document.getElementById('semPercentReal').textContent = stats.round2.semPercent + '%';
+                            document.getElementById('shanePercentReal').textContent = stats.round2.shanePercent + '%';
+                            document.getElementById('realTotal').textContent = stats.round2.total;
+                            setTimeout(function() {
+                                var s = document.getElementById('semBarReal');
+                                s.style.width = stats.round2.semPercent + '%';
+                                s.textContent = stats.round2.semPercent > 10 ? stats.round2.semPercent + '%' : '';
+                            }, 200);
+                            setTimeout(function() {
+                                var b = document.getElementById('shaneBarReal');
+                                b.style.width = stats.round2.shanePercent + '%';
+                                b.textContent = stats.round2.shanePercent > 10 ? stats.round2.shanePercent + '%' : '';
+                            }, 500);
+                        }
+                        if (currentScreen === 'screen-final') {
+                            document.getElementById('r1LarsPercentFinal').textContent = stats.round1.larsPercent + '%';
+                            document.getElementById('r1YoussefPercentFinal').textContent = stats.round1.youssefPercent + '%';
+                            document.getElementById('r1TotalFinal').textContent = stats.round1.total;
+                            setTimeout(function() {
+                                document.getElementById('r1LarsBarFinal').style.width = stats.round1.larsPercent + '%';
+                                document.getElementById('r1YoussefBarFinal').style.width = stats.round1.youssefPercent + '%';
+                            }, 400);
+                        }
+                    });
+                }
+            } catch(e) {}
+        }
+
+        function typewriter(elementId, text, speed, callback) {
+            var el = document.getElementById(elementId);
+            if (!el) return;
+            el.textContent = '';
+            var i = 0;
+            function type() {
+                if (i < text.length) {
+                    el.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed || 100);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            type();
+        }
+
+        function goToScreen(screenId) {
+            var screens = ['screen-welcome','screen-round1','screen-loading','screen-stats','screen-twist1','screen-twist2','screen-typenaam','screen-naamreveal','screen-twist3','screen-twist4','screen-round2','screen-round2-result','screen-final'];
+            var cur = document.getElementById(currentScreen);
+            var next = document.getElementById(screenId);
+            if (cur) cur.classList.remove('active');
+            if (next) next.classList.add('active');
+            currentScreen = screenId;
+
+            var idx = screens.indexOf(screenId);
+            var pct = ((idx + 1) / totalScreens) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+
+            if (darkScreens.indexOf(screenId) > -1) {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+
+            if (vibrateScreens.indexOf(screenId) > -1) {
+                vibrate([50, 30, 50]);
+            }
+
+            if (screenId === 'screen-twist1' || screenId === 'screen-twist2') {
+                setTimeout(playTwistSound, 300);
+            }
+            if (screenId === 'screen-twist4') {
+                setTimeout(playTwistSound, 500);
+            }
+            if (screenId === 'screen-naamreveal') {
+                setTimeout(playRevealSound, 400);
+            }
+
+            if (screenId === 'screen-round1') round1Start = Date.now();
+            if (screenId === 'screen-loading') setTimeout(function() { goToScreen('screen-stats'); }, 3000);
+            if (screenId === 'screen-stats') animateFakeStats();
+            if (screenId === 'screen-twist1') {
+                document.getElementById('twist1Content').style.opacity = '0';
+                document.getElementById('wachtText').textContent = '';
+                typewriter('wachtText', 'Wacht.', 200, function() {
+                    setTimeout(function() {
+                        document.getElementById('twist1Content').style.opacity = '1';
+                    }, 400);
+                });
+            }
+            if (screenId === 'screen-twist3') showThinkTime();
+            if (screenId === 'screen-twist4') {
+                document.getElementById('totnuText').textContent = '';
+                setTimeout(function() { typewriter('totnuText', 'Tot nu.', 150); }, 2000);
+            }
+            if (screenId === 'screen-round2') round2Start = Date.now();
+            if (screenId === 'screen-final') showFinalComparison();
+
+            window.scrollTo(0, 0);
+        }
+
+        function selectCandidate(candidate, el) {
+            playClickSound();
+            round1ThinkTime = Date.now() - round1Start;
+            round1Choice = candidate;
+            var cards = document.querySelectorAll('#screen-round1 .candidate-card');
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.pointerEvents = 'none';
+                cards[i].style.opacity = '0.4';
+                cards[i].style.animation = 'none';
+            }
+            el.style.opacity = '1';
+            el.style.borderColor = '#1a56db';
+            el.style.background = '#eff6ff';
+            if (socket) { try { socket.emit('vote:round1', { candidate: candidate, thinkTime: round1ThinkTime }); } catch(e) {} }
+            setTimeout(function() { goToScreen('screen-loading'); }, 800);
+        }
+
+        function selectCandidateRound2(candidate, el) {
+            playClickSound();
+            round2ThinkTime = Date.now() - round2Start;
+            round2Choice = candidate;
+            var cards = document.querySelectorAll('#screen-round2 .candidate-card');
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.pointerEvents = 'none';
+                cards[i].style.opacity = '0.4';
+                cards[i].style.animation = 'none';
+            }
+            el.style.opacity = '1';
+            el.style.borderColor = '#1a56db';
+            el.style.background = '#eff6ff';
+            if (socket) { try { socket.emit('vote:round2', { candidate: candidate, thinkTime: round2ThinkTime }); } catch(e) {} }
+            setTimeout(function() {
+                document.getElementById('round2Choice').textContent = candidate === 'sem' ? 'Sem van der Berg' : 'Shane de Vries';
+                goToScreen('screen-round2-result');
+            }, 800);
+        }
+
+        function animateFakeStats() {
+            setTimeout(function() { var b = document.getElementById('larsBar'); b.style.width = '68%'; b.textContent = '68%'; }, 400);
+            setTimeout(function() { var b = document.getElementById('youssefBar'); b.style.width = '32%'; b.textContent = '32%'; }, 700);
+            document.getElementById('groupLabel').innerHTML = round1Choice === 'lars' ? 'Je zat bij de <strong>meerderheid</strong>.' : 'Je zat bij de <strong>minderheid</strong>.';
+        }
+
+        function showThinkTime() {
+            document.getElementById('userThinkTime').textContent = (round1ThinkTime / 1000).toFixed(1) + 's';
+            playRevealSound();
+        }
+
+        function submitName() {
+            var input = document.getElementById('userFullName');
+            var name = input.value.trim();
+            if (!name) {
+                input.style.borderColor = '#e11d48';
+                input.placeholder = 'Vul iets in...';
+                input.classList.add('shake');
+                vibrate([100, 50, 100]);
+                setTimeout(function() { input.classList.remove('shake'); }, 500);
+                return;
+            }
+            playClickSound();
+            userName = name;
+            document.getElementById('displayName').textContent = name;
+            goToScreen('screen-naamreveal');
+        }
+
+        function showFinalComparison() {
+            document.getElementById('r1TimeFinal').textContent = (round1ThinkTime / 1000).toFixed(1) + 's bedenktijd';
+            document.getElementById('r2TimeFinal').textContent = (round2ThinkTime / 1000).toFixed(1) + 's bedenktijd';
+            document.getElementById('flagResult').style.display = 'none';
+            document.getElementById('finalContinue').style.display = 'none';
+            var flags = document.querySelectorAll('.flag-option');
+            for (var i = 0; i < flags.length; i++) {
+                flags[i].classList.remove('wrong', 'correct');
+                flags[i].style.pointerEvents = 'auto';
+            }
+        }
+
+        function selectFlag(flag) {
+            playTwistSound();
+            vibrate([30, 20, 30, 20, 60]);
+            var flags = document.querySelectorAll('.flag-option');
+            for (var i = 0; i < flags.length; i++) { flags[i].style.pointerEvents = 'none'; }
+
+            var resultDiv = document.getElementById('flagResult');
+            var resultText = document.getElementById('flagResultText');
+            var continueDiv = document.getElementById('finalContinue');
+
+            if (flag === 'nl') {
+                flags[3].classList.add('correct');
+                resultText.innerHTML = '<p style="font-size: 15px; line-height: 1.7;"><strong>Waarschijnlijk niet de meest logische keuze he?</strong><br><br>Maar Shane is gewoon Nederlands. Zijn ouders kozen een naam die ze mooi vonden. Geen etnische betekenis, geen culturele reden.<br><br><strong>Gewoon... een naam.</strong><br><br>En toch dacht je waarschijnlijk eerst aan iets anders. Want dat is wat namen met ons doen — ze vertellen een verhaal voordat we er een kennen.</p>';
+            } else {
+                var selectedIdx = flag === 'ma' ? 0 : flag === 'tr' ? 1 : 2;
+                flags[selectedIdx].classList.add('wrong');
+                flags[3].classList.add('correct');
+                resultText.innerHTML = '<p style="font-size: 15px; line-height: 1.7;"><strong>Had je niet verwacht he?</strong><br><br>Shane is Nederlands. Zijn ouders kozen gewoon een andere naam.<br><br>Geen etnische betekenis. Geen culturele reden.<br><br><strong>Gewoon... een naam.</strong><br><br>En toch vertelde die naam je een verhaal. Want dat is wat namen met ons doen — ze vertellen een verhaal voordat we er een kennen.</p>';
+            }
+
+            resultDiv.style.display = 'block';
+            setTimeout(function() { continueDiv.style.display = 'block'; }, 800);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && currentScreen === 'screen-typenaam') submitName();
+        });
+
+        document.addEventListener('click', function() {
+            if (!audioCtx) initAudio();
+        }, { once: true });
+        document.addEventListener('touchstart', function() {
+            if (!audioCtx) initAudio();
+        }, { once: true });
+
+        window.addEventListener('load', function() { initSocket(); });
+    </script>
+    <script src="/socket.io/socket.io.js" onerror="console.log('Offline mode')"></script>
+</body>
+</html>
