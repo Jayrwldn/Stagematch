@@ -195,9 +195,8 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`StageMatch NL server running on port ${PORT}`);
-  console.log(`Student site: http://0.0.0.0:${PORT}/`);
+    console.log(`StageMatch NL server running on port ${PORT}`);
   console.log(`Results dashboard: http://0.0.0.0:${PORT}/results`);
 });
