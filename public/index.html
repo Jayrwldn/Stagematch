@@ -501,10 +501,10 @@
         <div class="anim-up" style="animation-delay:0.2s;">
             <p style="font-size:18px;margin-bottom:14px;font-weight:700;">Welke afkomst denk je dat Shane heeft?</p>
             <div class="flags-wrap" id="flagsWrap">
-                <div class="flag-btn" onclick="pickFlag('ma',this)" id="flag-ma"></div>
-                <div class="flag-btn" onclick="pickFlag('tr',this)" id="flag-tr"></div>
-                <div class="flag-btn" onclick="pickFlag('sr',this)" id="flag-sr"></div>
-                <div class="flag-btn" onclick="pickFlag('nl',this)" id="flag-nl"></div>
+                <div class="flag-btn" id="flag-ma">Marokkaans</div>
+<div class="flag-btn" id="flag-tr">Turks</div>
+<div class="flag-btn" id="flag-sr">Surinaams</div>
+<div class="flag-btn" id="flag-nl">Nederlands</div>
             </div>
         </div>
         <div id="flagResult" style="display:none;animation:fadeSlideUp 0.6s ease both;">
@@ -551,7 +551,12 @@
             'sr': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23377e3f" width="900" height="120"/><rect fill="white" y="120" width="900" height="90"/><rect fill="%23b40a2d" y="210" width="900" height="180"/><rect fill="white" y="390" width="900" height="90"/><rect fill="%23377e3f" y="480" width="900" height="120"/><polygon fill="%23fcd116" points="450,260 475,340 555,340 490,385 515,465 450,420 385,465 410,385 345,340 425,340"/></svg>',
             'nl': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23ae1c28" width="900" height="200"/><rect fill="white" y="200" width="900" height="200"/><rect fill="%2321468b" y="400" width="900" height="200"/></svg>'
         };
-        var flagNames = { 'ma': 'Marokko', 'tr': 'Turkije', 'sr': 'Suriname', 'nl': 'Nederland' };
+        var flagNames = const flagNames = {
+    ma: 'Marokkaans',
+    tr: 'Turks',
+    sr: 'Surinaams',
+    nl: 'Nederlands'
+};
         Object.keys(flagSVGs).forEach(function(key) {
             var el = document.getElementById('flag-' + key);
             if (el) el.innerHTML = '<img src="' + flagSVGs[key] + '" alt="' + flagNames[key] + '">';
