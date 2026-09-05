@@ -3,680 +3,761 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>StageMatch NL — Sollicitatiecommissie</title>
+    <title>StageMatch NL</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --primary: #1a56db;
-            --primary-hover: #1e40af;
-            --dark: #0a0a0a;
-            --gray: #64748b;
-            --light: #f8fafc;
-            --white: #ffffff;
-            --accent: #e11d48;
-            --success: #059669;
+            --blue: #2563eb; --blue-glow: rgba(37,99,235,0.3);
+            --red: #e11d48; --green: #10b981; --purple: #7c3aed;
+            --dark: #06060b; --dark-card: #12121a; --dark-border: #1e1e2e;
+            --light: #f8fafc; --light-card: #ffffff; --gray: #64748b; --gray-light: #94a3b8;
         }
+        html, body { height: 100%; overflow-x: hidden; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--white);
-            color: var(--dark);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--light);
+            color: #1a1a2e;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 24px 20px;
             -webkit-font-smoothing: antialiased;
-            transition: background 0.8s ease, color 0.8s ease;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background 1s ease, color 1s ease;
             position: relative;
-            z-index: 1;
+            overflow-y: auto;
         }
+        body.dark { background: var(--dark); color: #e2e8f0; }
+        body.dark p { color: var(--gray-light); }
+        body.dark .divider { background: var(--dark-border); }
+
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.08) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+            transition: opacity 1s ease;
+        }
+        body.dark .bg-gradient {
+            background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 50%, rgba(124,58,237,0.1) 0%, transparent 40%);
+        }
+
+        .particles-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .particle {
+            position: absolute; width: 3px; height: 3px;
+            background: rgba(37,99,235,0.3);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+        body.dark .particle { background: rgba(148,163,184,0.4); }
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-20px) rotate(360deg); opacity: 0; }
+        }
+
         .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), #3b82f6);
-            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 100;
-            box-shadow: 0 0 8px rgba(26, 86, 219, 0.4);
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--purple), var(--blue));
+            background-size: 200% 100%;
+            animation: progressShimmer 3s ease infinite;
+            transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+            z-index: 1000; pointer-events: none;
+            box-shadow: 0 0 12px var(--blue-glow);
         }
-        body.dark { background: var(--dark); color: var(--white); }
-        body.dark h1, body.dark .twist-text { color: var(--white); }
-        body.dark p { color: #94a3b8; }
-        body.dark .highlight { color: var(--white); }
-        body.dark .divider { background: #1e293b; }
-        body.dark .logo { color: var(--white); }
-        body.dark .badge { background: #1e293b; color: #60a5fa; }
-        body.dark .logo-tagline { color: #475569; }
-        body.dark .candidate-card { background: #1e293b; border-color: #334155; }
-        body.dark .candidate-name { color: var(--white); }
-        body.dark .progress-bar { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+        @keyframes progressShimmer {
+            0%,100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .audio-btn {
+            position: fixed; top: 16px; right: 16px; z-index: 1001;
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 1.5px solid rgba(148,163,184,0.3);
+            background: rgba(248,250,252,0.8);
+            backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        .audio-btn:active { transform: scale(0.9); }
+        body.dark .audio-btn { background: rgba(18,18,26,0.8); border-color: rgba(148,163,184,0.2); }
+
         .screen {
-            display: none;
-            width: 100%;
-            max-width: 440px;
-            text-align: center;
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            display: none; width: 100%; max-width: 420px;
+            text-align: center; position: relative; z-index: 1;
         }
         .screen.active { display: flex; flex-direction: column; align-items: center; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .logo {
+            font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 2px;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        @keyframes countUp { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-            20%, 40%, 60%, 80% { transform: translateX(4px); }
-        }
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(26, 86, 219, 0); }
-            50% { transform: scale(1.01); box-shadow: 0 4px 12px rgba(26, 86, 219, 0.08); }
-        }
-        @keyframes flagBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-        .logo { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 2px; letter-spacing: -0.5px; }
-        .logo-tagline { font-size: 11px; color: var(--gray); font-style: italic; margin-bottom: 28px; letter-spacing: 0.5px; }
+        body.dark .logo { background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; background-clip: text; }
+        .logo-sub { font-size: 11px; color: var(--gray); font-style: italic; margin-bottom: 24px; letter-spacing: 0.3px; }
+
         .badge {
-            display: inline-block; background: #eff6ff; color: var(--primary);
-            font-size: 10px; font-weight: 600; padding: 5px 12px;
-            border-radius: 20px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.8px;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(37,99,235,0.08); color: var(--blue);
+            font-size: 10px; font-weight: 700; padding: 6px 14px; border-radius: 100px;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+            border: 1px solid rgba(37,99,235,0.15);
         }
-        h1 { font-size: 22px; font-weight: 700; line-height: 1.35; margin-bottom: 14px; color: var(--dark); }
-        p { font-size: 15px; line-height: 1.65; color: #475569; margin-bottom: 14px; }
-        .highlight { color: var(--dark); font-weight: 600; }
-        .accent { color: var(--accent); font-weight: 700; }
-        .divider { width: 40px; height: 1.5px; background: #e2e8f0; margin: 20px 0; }
+        body.dark .badge { background: rgba(96,165,250,0.1); color: #93c5fd; border-color: rgba(96,165,250,0.2); }
+
+        h1 { font-size: 24px; font-weight: 800; line-height: 1.3; margin-bottom: 14px; color: #0f172a; letter-spacing: -0.5px; }
+        body.dark h1 { color: #f1f5f9; }
+        p { font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 12px; }
+        .highlight { color: #0f172a; font-weight: 700; }
+        body.dark .highlight { color: #f1f5f9; }
+        .accent { color: var(--red); font-weight: 800; }
+        .muted { color: var(--gray); font-size: 13px; }
+        .divider { width: 32px; height: 2px; background: #e2e8f0; margin: 20px auto; border-radius: 2px; }
+
         .candidates { display: flex; flex-direction: column; gap: 10px; width: 100%; margin: 20px 0; }
-        .candidate-card {
-            background: var(--light);
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 18px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            touch-action: manipulation;
-            animation: breathe 3s ease-in-out infinite;
-            pointer-events: auto;
+        .card {
+            background: var(--light-card); border: 2px solid #e2e8f0; border-radius: 16px;
+            padding: 20px; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            text-align: left; position: relative; overflow: hidden;
+            animation: cardBreathe 4s ease-in-out infinite;
         }
-        .candidate-card:nth-child(2) { animation-delay: 0.5s; }
-        .candidate-card:hover { border-color: var(--primary); background: #eff6ff; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(26, 86, 219, 0.12); }
-        .candidate-card:active { transform: scale(0.98); animation: none; }
-        .candidate-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
-        .candidate-name { font-size: 17px; font-weight: 600; color: var(--dark); }
+        .card:nth-child(2) { animation-delay: 1s; }
+        body.dark .card { background: var(--dark-card); border-color: var(--dark-border); }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(37,99,235,0.06), transparent);
+            transition: left 0.6s ease;
+        }
+        .card:hover::before { left: 100%; }
+        .card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(37,99,235,0.15); }
+        .card:active { transform: scale(0.97); }
+        .card.selected { border-color: var(--blue); background: rgba(37,99,235,0.05); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+        body.dark .card.selected { background: rgba(96,165,250,0.08); box-shadow: 0 0 0 4px rgba(96,165,250,0.15); }
+        @keyframes cardBreathe {
+            0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+            50% { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        }
+        body.dark .card { animation-name: cardBreatheDark; }
+        @keyframes cardBreatheDark {
+            0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        }
+
+        .card-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-bottom: 4px; }
+        .card-name { font-size: 19px; font-weight: 700; color: #0f172a; }
+        body.dark .card-name { color: #f1f5f9; }
+
         .btn {
-            display: inline-block; padding: 14px 28px; border-radius: 10px;
-            font-size: 15px; font-weight: 600; border: none; cursor: pointer;
-            transition: all 0.2s ease; width: 100%; max-width: 300px; margin-top: 8px;
-            -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation;
-            pointer-events: auto;
+            display: inline-block; padding: 16px 32px; border-radius: 14px;
+            font-size: 16px; font-weight: 700; border: none; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            width: 100%; max-width: 300px; margin-top: 10px;
+            position: relative; overflow: hidden;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3); }
-        .btn-primary:active { transform: scale(0.97); }
-        .loading-dots { display: inline-flex; gap: 6px; margin: 20px 0; }
-        .loading-dots span {
-            width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
-            animation: pulse 1.4s ease infinite;
+        .btn-primary { background: linear-gradient(135deg, var(--blue), #1d4ed8); color: white; box-shadow: 0 4px 16px rgba(37,99,235,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: scale(0); animation: ripple 0.6s ease-out;
+            pointer-events: none;
         }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        .results-container { width: 100%; margin: 20px 0; }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        .loading-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 40px; }
+        .loading-ring {
+            width: 48px; height: 48px;
+            border: 3px solid rgba(37,99,235,0.15);
+            border-top-color: var(--blue);
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .results-wrap { width: 100%; margin: 20px 0; }
         .result-row { margin-bottom: 14px; }
-        .result-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; font-weight: 500; }
-        .result-bar { height: 28px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .result-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+        .result-track { height: 36px; background: #e2e8f0; border-radius: 10px; overflow: hidden; position: relative; }
+        body.dark .result-track { background: var(--dark-border); }
         .result-fill {
-            height: 100%; border-radius: 6px;
-            transition: width 2s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; align-items: center; padding-left: 10px;
-            font-size: 12px; font-weight: 600; color: white;
+            height: 100%; border-radius: 10px;
+            transition: width 2s cubic-bezier(0.16,1,0.3,1);
+            display: flex; align-items: center; padding-left: 14px;
+            font-size: 13px; font-weight: 700; color: white;
+            position: relative; overflow: hidden;
         }
-        .result-fill.lars { background: linear-gradient(90deg, #1a56db, #3b82f6); }
-        .result-fill.youssef { background: linear-gradient(90deg, #e11d48, #f43f5e); }
-        .result-fill.sem { background: linear-gradient(90deg, #1a56db, #3b82f6); }
-        .result-fill.shane { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
-        .stat-number { font-size: 52px; font-weight: 800; color: var(--dark); animation: countUp 0.6s ease; }
-        body.dark .stat-number { color: var(--white); }
-        .stat-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
-        .twist-text { font-size: 20px; font-weight: 700; color: var(--dark); line-height: 1.4; }
-        .big-reveal { font-size: 32px; font-weight: 800; color: var(--accent); margin: 16px 0; animation: countUp 0.6s ease; }
-        .time-display { font-size: 48px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
-        body.dark .time-display { color: #60a5fa; }
-        .time-label { font-size: 13px; color: var(--gray); margin-top: 4px; }
+        .result-fill::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            animation: shimmerBar 2.5s ease infinite;
+        }
+        @keyframes shimmerBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .fill-lars { background: linear-gradient(135deg, var(--blue), #3b82f6); }
+        .fill-youssef { background: linear-gradient(135deg, var(--red), #f43f5e); }
+        .fill-sem { background: linear-gradient(135deg, var(--blue), #6366f1); }
+        .fill-shane { background: linear-gradient(135deg, var(--purple), #a78bfa); }
+
+        .big-number {
+            font-size: 64px; font-weight: 900; letter-spacing: -3px;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            animation: scaleIn 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        body.dark .big-number { background: linear-gradient(135deg, #60a5fa, #c084fc); -webkit-background-clip: text; background-clip: text; }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+        .big-label { font-size: 13px; color: var(--gray); margin-top: 4px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 16px 0; }
+        .stat-card {
+            background: rgba(37,99,235,0.04); border: 1.5px solid rgba(37,99,235,0.1);
+            border-radius: 14px; padding: 16px 12px; transition: all 0.3s ease;
+        }
+        body.dark .stat-card { background: rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.12); }
+        .stat-val { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+        body.dark .stat-val { color: #f1f5f9; }
+        .stat-desc { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+
+        .twist-text { font-size: 22px; font-weight: 800; line-height: 1.4; color: #0f172a; }
+        body.dark .twist-text { color: #f1f5f9; }
+        .big-reveal { font-size: 40px; font-weight: 900; color: var(--red); letter-spacing: -1px; }
+        .time-display {
+            font-size: 56px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--blue), #06b6d4);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        body.dark .time-display { background: linear-gradient(135deg, #60a5fa, #22d3ee); -webkit-background-clip: text; background-clip: text; }
+        .time-sub { font-size: 13px; color: var(--gray); margin-top: 4px; }
+
         .name-input {
-            width: 100%; padding: 16px; border: 1.5px solid #e2e8f0; border-radius: 12px;
-            font-size: 18px; text-align: center; outline: none;
-            transition: all 0.3s ease; margin: 16px 0; background: transparent; color: inherit;
+            width: 100%; padding: 18px; border: 2px solid #e2e8f0; border-radius: 14px;
+            font-size: 20px; text-align: center; outline: none;
+            transition: all 0.3s ease; background: transparent; color: inherit;
+            font-family: inherit; font-weight: 600;
         }
-        .name-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1); }
-        body.dark .name-input { border-color: #334155; color: white; }
-        body.dark .name-input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15); }
-        .name-reveal { font-size: 36px; font-weight: 800; color: var(--white); margin: 12px 0; animation: countUp 0.5s ease; word-break: break-word; }
-        .shake { animation: shake 0.5s ease; }
-        .flags-grid { display: flex; justify-content: center; gap: 12px; margin: 16px 0; }
-        .flag-option {
-            font-size: 36px; cursor: pointer; padding: 12px; border-radius: 8px;
-            background: rgba(255,255,255,0.05); border: 2px solid transparent;
-            transition: all 0.2s ease; user-select: none; touch-action: manipulation;
-            pointer-events: auto;
+        .name-input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+        body.dark .name-input { border-color: var(--dark-border); }
+        body.dark .name-input:focus { border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96,165,250,0.15); }
+        .name-display {
+            font-size: 44px; font-weight: 900; color: #f1f5f9; letter-spacing: -1px;
+            animation: scaleIn 0.5s cubic-bezier(0.16,1,0.3,1);
         }
-        .flag-option:hover {
-            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2);
-            animation: flagBounce 0.4s ease;
+
+        .flags-wrap { display: flex; justify-content: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+        .flag-btn {
+            width: 72px; height: 72px; border-radius: 16px;
+            border: 2px solid transparent; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.08); overflow: hidden; position: relative;
         }
-        .flag-option:active { transform: scale(0.95); }
-        .flag-option.wrong { border-color: var(--accent); background: rgba(225, 29, 72, 0.15); opacity: 0.6; }
-        .flag-option.correct { border-color: var(--success); background: rgba(5, 150, 105, 0.2); }
-        .strikethrough { text-decoration: line-through; text-decoration-color: var(--accent); text-decoration-thickness: 2px; opacity: 0.5; }
-        .footer { margin-top: 32px; font-size: 11px; color: var(--gray); }
-        .credit { margin-top: 48px; font-size: 10px; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; opacity: 0.4; }
+        .flag-btn:hover { transform: scale(1.12) translateY(-4px); border-color: rgba(255,255,255,0.3); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .flag-btn:active { transform: scale(0.95); }
+        .flag-btn.wrong { border-color: var(--red); animation: shakeCard 0.5s ease; opacity: 0.5; }
+        .flag-btn.correct { border-color: var(--green); animation: popCorrect 0.6s ease; box-shadow: 0 0 24px rgba(16,185,129,0.4); }
+        .flag-btn img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes shakeCard { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+        @keyframes popCorrect { 0% { transform: scale(1); } 30% { transform: scale(1.2); } 60% { transform: scale(0.95); } 100% { transform: scale(1.05); } }
+
+        .strike { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 3px; opacity: 0.5; }
+
+        .footer-note { margin-top: 28px; font-size: 11px; color: var(--gray); }
+        .credit { margin-top: 40px; font-size: 9px; color: var(--gray-light); letter-spacing: 2px; text-transform: uppercase; opacity: 0.35; }
+
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeSlideLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeSlideRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .anim-up { animation: fadeSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+        .anim-left { animation: fadeSlideLeft 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+        .anim-right { animation: fadeSlideRight 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+
+        .confetti-piece {
+            position: fixed; width: 8px; height: 8px; top: -10px; z-index: 999;
+            pointer-events: none; animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
         @media (max-width: 380px) {
-            h1 { font-size: 19px; }
-            .big-reveal { font-size: 26px; }
-            .stat-number { font-size: 44px; }
-            .name-reveal { font-size: 28px; }
+            h1 { font-size: 20px; }
+            .big-number { font-size: 52px; }
+            .time-display { font-size: 46px; }
+            .name-display { font-size: 34px; }
+            .twist-text { font-size: 19px; }
+            .flag-btn { width: 64px; height: 64px; }
         }
     </style>
 </head>
 <body>
-    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+    <div class="bg-gradient"></div>
+    <div class="particles-container" id="particles"></div>
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">🔊</button>
+
     <div class="screen active" id="screen-welcome">
-        <div class="logo">StageMatch<span style="color: var(--accent)">NL</span></div>
-        <div class="logo-tagline">Connecting talent with opportunity</div>
-        <div class="badge">Beveiligde selectieprocedure</div>
+        <div class="logo">StageMatch<span style="-webkit-text-fill-color: var(--red)">NL</span></div>
+        <div class="logo-sub">Connecting talent with opportunity</div>
+        <div class="badge">🔒 Beveiligde selectieprocedure</div>
         <h1>Je bent geselecteerd als lid van de sollicitatiecommissie</h1>
         <p>Je neemt deel aan een <span class="highlight">definitieve selectieronde</span> voor een stageplek bij een gerenommeerde organisatie in Amsterdam.</p>
-        <p style="font-size: 13px; color: var(--gray);">Dit is geen oefening. Jouw oordeel wordt meegewogen in de definitieve beslissing.</p>
+        <p class="muted">Dit is geen oefening. Jouw oordeel wordt meegewogen in de definitieve beslissing.</p>
         <div class="divider"></div>
-        <p style="font-size: 13px;"><span class="highlight">2 kandidaten</span> · Zelfde opleiding · Zelfde cijfers · Zelfde brief<br><span class="accent">1 plek beschikbaar</span></p>
-        <button class="btn btn-primary btn-start" onclick="goToScreen('screen-round1')">Begin met selecteren</button>
-        <p class="footer">Anoniem verwerkt · Door verder te gaan ga je akkoord met deelname</p>
+        <p style="font-size:13px;"><span class="highlight">2 kandidaten</span> · Zelfde opleiding · Zelfde cijfers · Zelfde brief<br><span class="accent">1 plek beschikbaar</span></p>
+        <button class="btn btn-primary" onclick="ripple(event); goToScreen('screen-round1')" style="margin-top:24px;">Begin met selecteren</button>
+        <p class="footer-note">Anoniem verwerkt · Door verder te gaan ga je akkoord met deelname</p>
     </div>
+
     <div class="screen" id="screen-round1">
-        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
-        <div class="logo-tagline" style="margin-bottom: 16px;">Selectieronde 1 van 2</div>
-        <h1 style="font-size: 17px;">Wie nodig je uit?</h1>
-        <p style="font-size: 13px; margin-bottom: 6px;">Geen verdere informatie beschikbaar.</p>
+        <div class="logo" style="font-size:20px;">StageMatch<span style="-webkit-text-fill-color: var(--red)">NL</span></div>
+        <div class="logo-sub" style="margin-bottom:12px;">Selectieronde 1 van 2</div>
+        <h1 style="font-size:18px;">Wie nodig je uit?</h1>
+        <p class="muted" style="margin-bottom:6px;">Geen verdere informatie beschikbaar.</p>
         <div class="candidates">
-            <div class="candidate-card" onclick="selectCandidate('lars', this)">
-                <div class="candidate-label">Kandidaat A</div>
-                <div class="candidate-name">Lars de Vries</div>
+            <div class="card" onclick="pickRound1('lars',this)">
+                <div class="card-label">Kandidaat A</div>
+                <div class="card-name">Lars de Vries</div>
             </div>
-            <div class="candidate-card" onclick="selectCandidate('youssef', this)">
-                <div class="candidate-label">Kandidaat B</div>
-                <div class="candidate-name">Youssef El Amrani</div>
+            <div class="card" onclick="pickRound1('youssef',this)">
+                <div class="card-label">Kandidaat B</div>
+                <div class="card-name">Youssef El Amrani</div>
             </div>
         </div>
     </div>
+
     <div class="screen" id="screen-loading">
-        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
-        <div style="margin-top: 32px;">
-            <div class="loading-dots"><span></span><span></span><span></span></div>
-            <p style="margin-top: 16px; font-size: 13px;">Resultaten ophalen...</p>
+        <div class="logo" style="font-size:20px;">StageMatch<span style="-webkit-text-fill-color: var(--red)">NL</span></div>
+        <div class="loading-wrap">
+            <div class="loading-ring"></div>
+            <p class="muted">Resultaten verzamelen...</p>
         </div>
     </div>
+
     <div class="screen" id="screen-stats">
-        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
-        <div class="badge">Live resultaten</div>
-        <div class="stat-number">847</div>
-        <div class="stat-label">deelnemers vandaag</div>
-        <div class="results-container">
+        <div class="logo" style="font-size:20px;">StageMatch<span style="-webkit-text-fill-color: var(--red)">NL</span></div>
+        <div class="badge">📊 Live resultaten</div>
+        <div class="big-number" id="participantCount">847</div>
+        <div class="big-label">deelnemers vandaag</div>
+        <div class="results-wrap">
             <div class="result-row">
-                <div class="result-label"><span>Lars de Vries</span><span class="highlight">68%</span></div>
-                <div class="result-bar"><div class="result-fill lars" id="larsBar" style="width: 0%"></div></div>
+                <div class="result-header"><span>Lars de Vries</span><span class="highlight">68%</span></div>
+                <div class="result-track"><div class="result-fill fill-lars" id="larsBar" style="width:0%"></div></div>
             </div>
             <div class="result-row">
-                <div class="result-label"><span>Youssef El Amrani</span><span class="highlight">32%</span></div>
-                <div class="result-bar"><div class="result-fill youssef" id="youssefBar" style="width: 0%"></div></div>
+                <div class="result-header"><span>Youssef El Amrani</span><span class="highlight">32%</span></div>
+                <div class="result-track"><div class="result-fill fill-youssef" id="youssefBar" style="width:0%"></div></div>
             </div>
         </div>
-        <p id="groupLabel" style="font-size: 13px; margin-top: 12px;"></p>
-        <button class="btn btn-primary" onclick="goToScreen('screen-twist1')">Volgende</button>
+        <p id="groupLabel" style="font-size:13px;margin-top:8px;"></p>
+        <button class="btn btn-primary" onclick="ripple(event); goToScreen('screen-twist1')">Volgende</button>
     </div>
+
     <div class="screen" id="screen-twist1">
-        <p class="twist-text" style="font-size: 32px; margin-bottom: 20px;" id="wachtText"></p>
-        <div id="twist1Content" style="opacity: 0; transition: opacity 0.5s ease;">
-            <div style="animation: slideUp 0.6s ease 0.3s both;">
+        <p class="twist-text" style="font-size:36px;margin-bottom:20px;" id="wachtText"></p>
+        <div id="twist1Content" style="opacity:0;transition:opacity 0.6s ease;">
+            <div class="anim-up" style="animation-delay:0.3s;">
                 <p class="twist-text">Die 847 studenten?<br><span class="accent">Bestaan niet.</span></p>
-                <div class="divider"></div>
+            </div>
+            <div class="divider"></div>
+            <div class="anim-up" style="animation-delay:0.6s;">
                 <p class="twist-text">Die 68%?<br><span class="accent">Verzonnen.</span></p>
             </div>
-            <div style="animation: slideUp 0.6s ease 0.8s both; margin-top: 20px;">
-                <p style="font-size: 14px;">Wij wilden zien wat je doet als je denkt dat de meerderheid voor Lars koos.</p>
-                <p style="font-size: 13px; color: var(--gray); margin-top: 12px;">Voelde je je bevestigd? Of juist beter dan de rest?</p>
-                <p class="twist-text" style="margin-top: 12px; font-size: 16px;">Dat was test 1.</p>
+            <div class="anim-up" style="animation-delay:1s;margin-top:20px;">
+                <p style="font-size:14px;">Wij wilden zien wat je doet als je denkt dat de meerderheid voor Lars koos.</p>
+                <p style="font-size:13px;margin-top:10px;">Voelde je je bevestigd? Of juist beter dan de rest?</p>
+                <p class="twist-text" style="margin-top:12px;font-size:17px;">Dat was test 1.</p>
             </div>
-            <button class="btn btn-primary" style="margin-top: 28px;" onclick="goToScreen('screen-twist2')">Ik wil verder</button>
+            <button class="btn btn-primary" style="margin-top:24px;" onclick="ripple(event); goToScreen('screen-twist2')">Ik wil verder</button>
         </div>
     </div>
+
     <div class="screen" id="screen-twist2">
-        <p style="font-size: 13px; color: var(--gray); margin-bottom: 20px;">Test 2</p>
-        <div style="animation: slideUp 0.5s ease both;">
-            <p class="twist-text">
-                <span class="strikethrough">Er was geen Lars.</span><br>
-                <span class="strikethrough">Geen Youssef.</span><br>
-                <span class="strikethrough">Geen stageplek.</span><br>
-                <span class="strikethrough">Geen organisatie.</span>
+        <p class="muted" style="margin-bottom:20px;">Test 2</p>
+        <div class="anim-up">
+            <p class="twist-text" style="font-size:20px;">
+                <span class="strike">Er was geen Lars.</span><br>
+                <span class="strike">Geen Youssef.</span><br>
+                <span class="strike">Geen stageplek.</span><br>
+                <span class="strike">Geen organisatie.</span>
             </p>
         </div>
-        <div class="divider" style="margin: 24px 0;"></div>
-        <div style="animation: slideUp 0.5s ease 0.5s both;">
-            <p class="twist-text" style="font-size: 18px;">Alleen <span class="accent">een naam</span>.</p>
-            <p style="font-size: 14px; margin-top: 12px; line-height: 1.7;">Geen CV. Geen foto. Geen motivatie.<br>Jouw keuze was gebaseerd op <strong>niets</strong>.</p>
+        <div class="divider" style="margin:24px 0;"></div>
+        <div class="anim-up" style="animation-delay:0.4s;">
+            <p class="twist-text" style="font-size:20px;">Alleen <span class="accent">een naam</span>.</p>
+            <p style="font-size:14px;margin-top:12px;line-height:1.7;">Geen CV. Geen foto. Geen motivatie.<br>Jouw keuze was gebaseerd op <strong>niets</strong>.</p>
         </div>
-        <button class="btn btn-primary" style="margin-top: 28px;" onclick="goToScreen('screen-typenaam')">Lees verder</button>
+        <button class="btn btn-primary" style="margin-top:24px;" onclick="ripple(event); goToScreen('screen-typenaam')">Lees verder</button>
     </div>
+
     <div class="screen" id="screen-typenaam">
-        <p style="font-size: 13px; color: var(--gray); margin-bottom: 12px;">Nu jij.</p>
-        <p class="twist-text" style="font-size: 18px;">Typ je naam of bijnaam.</p>
+        <p class="muted" style="margin-bottom:10px;">Nu jij.</p>
+        <p class="twist-text" style="font-size:20px;">Typ je naam of bijnaam.</p>
         <input type="text" class="name-input" id="userFullName" placeholder="Jouw naam..." autocomplete="off" maxlength="30">
-        <p style="font-size: 12px; color: var(--gray); margin-top: -8px; margin-bottom: 16px;">(geen zorgen, dit wordt nergens opgeslagen)</p>
-        <button class="btn btn-primary" style="margin-top: 12px;" onclick="submitName()">Bevestig</button>
+        <p class="muted" style="margin-top:-6px;margin-bottom:14px;font-size:12px;">(geen zorgen, dit wordt nergens opgeslagen)</p>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="ripple(event); submitName()">Bevestig</button>
     </div>
+
     <div class="screen" id="screen-naamreveal">
-        <p style="font-size: 13px; color: var(--gray);">Stel je voor...</p>
-        <div class="name-reveal" id="displayName">—</div>
-        <p style="font-size: 15px;">staat op een CV.</p>
+        <p class="muted">Stel je voor...</p>
+        <div class="name-display" id="displayName">—</div>
+        <p style="font-size:15px;">staat op een CV.</p>
         <div class="divider"></div>
-        <div style="animation: slideUp 0.5s ease 0.5s both;">
-            <p style="font-size: 14px; line-height: 1.7;">Geen foto. Geen brief. Geen cijfers.<br><strong>Alleen jouw naam.</strong></p>
+        <div class="anim-up" style="animation-delay:0.4s;">
+            <p style="font-size:14px;line-height:1.7;">Geen foto. Geen brief. Geen cijfers.<br><strong>Alleen jouw naam.</strong></p>
         </div>
-        <div style="animation: slideUp 0.5s ease 1s both; margin-top: 16px;">
-            <p class="twist-text" style="font-size: 20px;">Zou <strong>jij</strong> jezelf aannemen?</p>
+        <div class="anim-up" style="animation-delay:0.8s;margin-top:16px;">
+            <p class="twist-text" style="font-size:22px;">Zou <strong>jij</strong> jezelf aannemen?</p>
         </div>
         <div class="divider"></div>
-        <div style="animation: slideUp 0.5s ease 1.5s both;">
-            <p style="font-size: 13px; color: var(--gray); font-style: italic; line-height: 1.6;">
-                Je naam is niet wie je bent.<br>Maar voor anderen is het vaak het enige wat ze zien.
-            </p>
+        <div class="anim-up" style="animation-delay:1.2s;">
+            <p style="font-size:13px;font-style:italic;line-height:1.6;">Je naam is niet wie je bent.<br>Maar voor anderen is het vaak het enige wat ze zien.</p>
         </div>
-        <button class="btn btn-primary" style="margin-top: 24px;" onclick="goToScreen('screen-twist3')">Verder</button>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="ripple(event); goToScreen('screen-twist3')">Verder</button>
     </div>
+
     <div class="screen" id="screen-twist3">
-        <p style="font-size: 13px; color: var(--gray); margin-bottom: 6px;">Wist je dit?</p>
-        <p class="twist-text" style="font-size: 18px;">We hebben gemeten hoe lang je erover deed.</p>
-        <div style="margin-top: 20px;">
+        <p class="muted" style="margin-bottom:4px;">Wist je dit?</p>
+        <p class="twist-text" style="font-size:19px;">We hebben gemeten hoe lang je erover deed.</p>
+        <div style="margin-top:20px;">
             <div class="time-display" id="userThinkTime">—</div>
-            <div class="time-label">seconden bedenktijd</div>
+            <div class="time-sub">seconden bedenktijd</div>
         </div>
         <div class="divider"></div>
-        <div style="animation: slideUp 0.5s ease 0.3s both;">
-            <p style="font-size: 14px; line-height: 1.7;">
-                Voor <strong>Lars</strong>: waarschijnlijk <strong>onder de 2 seconden</strong>.<br>
-                Voor <strong>Youssef</strong>: waarschijnlijk <strong>langer</strong>. Je twijfelde.
-            </p>
+        <div class="anim-up" style="animation-delay:0.3s;">
+            <p style="font-size:14px;line-height:1.7;">Voor <strong>Lars</strong>: waarschijnlijk <strong>onder de 2 seconden</strong>.<br>Voor <strong>Youssef</strong>: waarschijnlijk <strong>langer</strong>. Je twijfelde.</p>
         </div>
-        <div style="animation: slideUp 0.5s ease 0.8s both; margin-top: 16px;">
-            <p class="twist-text" style="font-size: 16px;">Waarom kostte het je meer moeite?</p>
+        <div class="anim-up" style="animation-delay:0.7s;margin-top:14px;">
+            <p class="twist-text" style="font-size:17px;">Waarom kostte het je meer moeite?</p>
         </div>
-        <button class="btn btn-primary" style="margin-top: 28px;" onclick="goToScreen('screen-twist4')">Verder</button>
+        <button class="btn btn-primary" style="margin-top:24px;" onclick="ripple(event); goToScreen('screen-twist4')">Verder</button>
     </div>
+
     <div class="screen" id="screen-twist4">
-        <p class="twist-text" style="font-size: 22px; margin-bottom: 16px;">Dat heeft het systeem jou geleerd.</p>
-        <div style="animation: slideUp 0.5s ease 0.3s both;">
-            <p style="font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 12px;">Niet jij. Het systeem.</p>
+        <p class="twist-text" style="font-size:22px;margin-bottom:14px;">Dat heeft het systeem jou geleerd.</p>
+        <div class="anim-up" style="animation-delay:0.2s;">
+            <p style="font-size:17px;font-weight:800;color:var(--red);margin-bottom:12px;">Niet jij. Het systeem.</p>
         </div>
-        <div style="animation: slideUp 0.5s ease 0.6s both; text-align: left; width: 100%;">
-            <p style="font-size: 13px; line-height: 1.8; color: #475569;">
-                — Zat je bij de 68%? Voelde je je <strong>normaal?</strong><br>
-                — Zat je bij de 32%? Voelde je je <strong>speciaal?</strong>
-            </p>
+        <div class="anim-up" style="animation-delay:0.5s;text-align:left;width:100%;">
+            <p style="font-size:13px;line-height:1.9;">— Zat je bij de 68%? Voelde je je <strong>normaal?</strong><br>— Zat je bij de 32%? Voelde je je <strong>speciaal?</strong></p>
         </div>
         <div class="divider"></div>
-        <div style="animation: slideUp 0.5s ease 1s both;">
-            <p style="font-size: 14px; line-height: 1.7; font-weight: 600;">
-                Institutionele discriminatie betekent:<br><br>
-                Niet één persoon is slecht.<br>
-                Het systeem is zo ontworpen dat jij deze keuze moest maken.<br><br>
-                Zonder dat je het wilde.<br>Zonder dat je het merkte.
-            </p>
+        <div class="anim-up" style="animation-delay:0.9s;">
+            <p style="font-size:14px;line-height:1.8;font-weight:600;">Institutionele discriminatie betekent:<br><br>Niet één persoon is slecht.<br>Het systeem is zo ontworpen dat jij deze keuze moest maken.<br><br>Zonder dat je het wilde.<br>Zonder dat je het merkte.</p>
         </div>
-        <div style="animation: slideUp 0.5s ease 1.5s both; margin-top: 16px;">
-            <p class="big-reveal" id="totnuText"></p>
+        <div class="anim-up" style="animation-delay:1.4s;margin-top:16px;">
+            <div class="big-reveal" id="totnuText"></div>
         </div>
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="goToScreen('screen-round2')">Laat me het bewijzen</button>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="ripple(event); goToScreen('screen-round2')">Laat me het bewijzen</button>
     </div>
+
     <div class="screen" id="screen-round2">
-        <div class="logo" style="font-size: 17px;">StageMatch<span style="color: var(--accent)">NL</span></div>
-        <div class="logo-tagline" style="margin-bottom: 16px;">Selectieronde 2 van 2</div>
-        <h1 style="font-size: 17px;">Nieuwe ronde. Twee nieuwe kandidaten.</h1>
-        <p style="font-size: 13px; margin-bottom: 6px;">Weer geen verdere informatie.</p>
+        <div class="logo" style="font-size:20px;">StageMatch<span style="-webkit-text-fill-color: var(--red)">NL</span></div>
+        <div class="logo-sub" style="margin-bottom:12px;">Selectieronde 2 van 2</div>
+        <h1 style="font-size:18px;">Nieuwe ronde. Twee nieuwe kandidaten.</h1>
+        <p class="muted" style="margin-bottom:6px;">Weer geen verdere informatie.</p>
         <div class="candidates">
-            <div class="candidate-card" onclick="selectCandidateRound2('sem', this)">
-                <div class="candidate-label">Kandidaat A</div>
-                <div class="candidate-name">Sem van der Berg</div>
+            <div class="card" onclick="pickRound2('sem',this)">
+                <div class="card-label">Kandidaat A</div>
+                <div class="card-name">Sem van der Berg</div>
             </div>
-            <div class="candidate-card" onclick="selectCandidateRound2('shane', this)">
-                <div class="candidate-label">Kandidaat B</div>
-                <div class="candidate-name">Shane de Vries</div>
+            <div class="card" onclick="pickRound2('shane',this)">
+                <div class="card-label">Kandidaat B</div>
+                <div class="card-name">Shane de Vries</div>
             </div>
         </div>
     </div>
+
     <div class="screen" id="screen-round2-result">
-        <p style="font-size: 13px; color: var(--gray); margin-bottom: 12px;">Je koos:</p>
-        <p class="twist-text" style="font-size: 22px;" id="round2Choice">—</p>
+        <p class="muted" style="margin-bottom:10px;">Je koos:</p>
+        <p class="twist-text" style="font-size:22px;" id="round2Choice">—</p>
         <div class="divider"></div>
-        <p style="font-size: 13px; color: var(--gray); margin-bottom: 6px;">Echte resultaten van deze sessie:</p>
-        <div class="results-container">
+        <p class="muted" style="margin-bottom:4px;font-size:12px;">Resultaten van deze sessie:</p>
+        <div class="results-wrap">
             <div class="result-row">
-                <div class="result-label"><span>Sem van der Berg</span><span class="highlight" id="semPercentReal">—</span></div>
-                <div class="result-bar"><div class="result-fill sem" id="semBarReal" style="width: 0%"></div></div>
+                <div class="result-header"><span>Sem van der Berg</span><span class="highlight" id="semPct">—</span></div>
+                <div class="result-track"><div class="result-fill fill-sem" id="semBar" style="width:0%"></div></div>
             </div>
             <div class="result-row">
-                <div class="result-label"><span>Shane de Vries</span><span class="highlight" id="shanePercentReal">—</span></div>
-                <div class="result-bar"><div class="result-fill shane" id="shaneBarReal" style="width: 0%"></div></div>
+                <div class="result-header"><span>Shane de Vries</span><span class="highlight" id="shanePct">—</span></div>
+                <div class="result-track"><div class="result-fill fill-shane" id="shaneBar" style="width:0%"></div></div>
             </div>
         </div>
-        <p style="font-size: 12px; color: var(--gray);"><span id="realTotal">—</span> studenten stemden</p>
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="goToScreen('screen-final')">Het laatste bericht</button>
+        <p class="muted" style="font-size:12px;"><span id="realTotal">—</span> studenten stemden</p>
+        <div class="stats-grid anim-up" style="animation-delay:0.5s;">
+            <div class="stat-card"><div class="stat-val">4.2s</div><div class="stat-desc">Gem. bedenktijd</div></div>
+            <div class="stat-card"><div class="stat-val">68%</div><div class="stat-desc">Twijfelde</div></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;" onclick="ripple(event); goToScreen('screen-final')">Het laatste bericht</button>
     </div>
+
     <div class="screen" id="screen-final">
-        <div style="animation: slideUp 0.6s ease 0.3s both;">
-            <p style="font-size: 18px; margin-bottom: 16px; font-weight: 600;">Welke afkomst denk je dat Shane heeft?</p>
-            <div class="flags-grid" id="flagsGrid">
-                <div class="flag-option" onclick="selectFlag('ma')">🇲🇦</div>
-                <div class="flag-option" onclick="selectFlag('tr')">🇹🇷</div>
-                <div class="flag-option" onclick="selectFlag('sr')">🇸🇷</div>
-                <div class="flag-option" onclick="selectFlag('nl')">🇳🇱</div>
+        <div class="anim-up" style="animation-delay:0.2s;">
+            <p style="font-size:18px;margin-bottom:14px;font-weight:700;">Welke afkomst denk je dat Shane heeft?</p>
+            <div class="flags-wrap" id="flagsWrap">
+                <div class="flag-btn" onclick="pickFlag('ma',this)" id="flag-ma"></div>
+                <div class="flag-btn" onclick="pickFlag('tr',this)" id="flag-tr"></div>
+                <div class="flag-btn" onclick="pickFlag('sr',this)" id="flag-sr"></div>
+                <div class="flag-btn" onclick="pickFlag('nl',this)" id="flag-nl"></div>
             </div>
         </div>
-        <div id="flagResult" style="display: none; animation: slideUp 0.6s ease;">
+        <div id="flagResult" style="display:none;animation:fadeSlideUp 0.6s ease both;">
             <div class="divider"></div>
             <div id="flagResultText"></div>
-            <div style="margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <p style="font-size: 15px; line-height: 1.7; font-weight: 500;">Maar eerlijk... maakt het echt uit wat voor afkomst Shane had gehad?</p>
+            <div style="margin-top:16px;padding:16px;background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+                <p style="font-size:14px;line-height:1.7;font-weight:500;">Maar eerlijk... maakt het echt uit wat voor afkomst Shane had gehad?</p>
             </div>
         </div>
-        <div id="finalContinue" style="display: none; animation: slideUp 0.6s ease 0.3s both;">
+        <div id="finalContinue" style="display:none;animation:fadeSlideUp 0.6s ease 0.2s both;">
             <div class="divider"></div>
-            <p style="font-size: 13px; color: var(--gray); margin-bottom: 8px;">Echte resultaten van <strong>jouw klas</strong> — Ronde 1:</p>
-            <div class="results-container">
+            <p class="muted" style="margin-bottom:6px;font-size:12px;">Echte resultaten van <strong>jouw klas</strong> — Ronde 1:</p>
+            <div class="results-wrap">
                 <div class="result-row">
-                    <div class="result-label"><span>Lars de Vries</span><span class="highlight" id="r1LarsPercentFinal">—</span></div>
-                    <div class="result-bar"><div class="result-fill lars" id="r1LarsBarFinal" style="width: 0%"></div></div>
+                    <div class="result-header"><span>Lars de Vries</span><span class="highlight" id="r1LarsPct">—</span></div>
+                    <div class="result-track"><div class="result-fill fill-lars" id="r1LarsBar" style="width:0%"></div></div>
                 </div>
                 <div class="result-row">
-                    <div class="result-label"><span>Youssef El Amrani</span><span class="highlight" id="r1YoussefPercentFinal">—</span></div>
-                    <div class="result-bar"><div class="result-fill youssef" id="r1YoussefBarFinal" style="width: 0%"></div></div>
+                    <div class="result-header"><span>Youssef El Amrani</span><span class="highlight" id="r1YoussefPct">—</span></div>
+                    <div class="result-track"><div class="result-fill fill-youssef" id="r1YoussefBar" style="width:0%"></div></div>
                 </div>
             </div>
-            <p style="font-size: 12px; color: var(--gray);"><span id="r1TotalFinal">—</span> klasgenoten stemden</p>
+            <p class="muted" style="font-size:12px;"><span id="r1Total">—</span> klasgenoten stemden</p>
             <div class="divider"></div>
-            <div style="margin-top: 8px;">
-                <p style="font-size: 14px; color: var(--gray);">
-                    Ronde 1 bedenktijd: <span id="r1TimeFinal">—</span><br>
-                    Ronde 2 bedenktijd: <span id="r2TimeFinal">—</span>
-                </p>
-                <p style="font-size: 13px; margin-top: 8px; font-style: italic;">
-                    Je bent bewust aan het denken.<br>Dat is de eerste stap.
-                </p>
+            <div style="margin-top:8px;">
+                <p style="font-size:14px;">Ronde 1 bedenktijd: <strong id="r1TimeFinal">—</strong><br>Ronde 2 bedenktijd: <strong id="r2TimeFinal">—</strong></p>
+                <div class="stats-grid" style="margin-top:12px;">
+                    <div class="stat-card"><div class="stat-val" id="fasterRound">—</div><div class="stat-desc">Snellere ronde</div></div>
+                    <div class="stat-card"><div class="stat-val" id="flagChoice">—</div><div class="stat-desc">Jouw vlag gok</div></div>
+                </div>
+                <p style="font-size:13px;margin-top:8px;font-style:italic;">Je bent bewust aan het denken.<br>Dat is de eerste stap.</p>
             </div>
-            <div style="margin-top: 16px;">
-                <p class="twist-text" style="font-size: 18px; font-weight: 700;">
-                    Nu je dit weet...<br>
-                    <span class="accent">wat ga jij veranderen?</span>
-                </p>
+            <div style="margin-top:16px;">
+                <p class="twist-text" style="font-size:19px;font-weight:800;">Nu je dit weet...<br><span class="accent">wat ga jij veranderen?</span></p>
             </div>
         </div>
         <p class="credit">designed by jayden</p>
     </div>
+
     <script>
+        var flagSVGs = {
+            'ma': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23c1272d" width="900" height="600"/><path fill="none" stroke="%23006233" stroke-width="12" d="M450 180L520 370L340 245H560L380 370Z"/></svg>',
+            'tr': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23e30a17" width="900" height="600"/><circle cx="380" cy="300" r="150" fill="white"/><circle cx="420" cy="300" r="120" fill="%23e30a17"/><polygon fill="white" points="520,300 475,285 475,315"/></svg>',
+            'sr': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23377e3f" width="900" height="120"/><rect fill="white" y="120" width="900" height="90"/><rect fill="%23b40a2d" y="210" width="900" height="180"/><rect fill="white" y="390" width="900" height="90"/><rect fill="%23377e3f" y="480" width="900" height="120"/><polygon fill="%23fcd116" points="450,260 475,340 555,340 490,385 515,465 450,420 385,465 410,385 345,340 425,340"/></svg>',
+            'nl': 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23ae1c28" width="900" height="200"/><rect fill="white" y="200" width="900" height="200"/><rect fill="%2321468b" y="400" width="900" height="200"/></svg>'
+        };
+        var flagNames = { 'ma': 'Marokko', 'tr': 'Turkije', 'sr': 'Suriname', 'nl': 'Nederland' };
+        Object.keys(flagSVGs).forEach(function(key) {
+            var el = document.getElementById('flag-' + key);
+            if (el) el.innerHTML = '<img src="' + flagSVGs[key] + '" alt="' + flagNames[key] + '">';
+        });
+
         var currentScreen = 'screen-welcome';
-        var round1Start = null;
-        var round2Start = null;
-        var round1Choice = null;
-        var round2Choice = null;
-        var round1ThinkTime = 0;
-        var round2ThinkTime = 0;
-        var userName = '';
+        var round1Start = 0, round2Start = 0;
+        var round1Choice = null, round2Choice = null;
+        var round1ThinkTime = 0, round2ThinkTime = 0;
+        var userName = '', userFlag = '';
+        var audioEnabled = true;
         var totalScreens = 13;
-        var darkScreens = ['screen-twist1', 'screen-twist2', 'screen-typenaam', 'screen-naamreveal', 'screen-twist3', 'screen-twist4', 'screen-final'];
-        var vibrateScreens = ['screen-twist1', 'screen-twist2', 'screen-naamreveal', 'screen-twist4', 'screen-final'];
-        var audioCtx = null;
-        function initAudio() {
-            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
-        }
-        function playTone(freq, duration, volume) {
-            if (!audioCtx) return;
-            try {
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(volume || 0.03, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (duration || 0.3));
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + (duration || 0.3));
-            } catch(e) {}
-        }
-        function playTwistSound() {
-            playTone(440, 0.4, 0.025);
-            setTimeout(function() { playTone(392, 0.3, 0.02); }, 150);
-        }
-        function playRevealSound() {
-            playTone(523, 0.25, 0.02);
-            setTimeout(function() { playTone(659, 0.2, 0.015); }, 100);
-        }
-        function playClickSound() {
-            playTone(800, 0.08, 0.015);
-        }
-        function vibrate(pattern) {
-            try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
-        }
-        var socket = null;
-        function initSocket() {
-            try {
-                if (typeof io !== 'undefined') {
-                    socket = io();
-                    socket.on('stats', function(stats) {
-                        if (currentScreen === 'screen-round2-result') {
-                            document.getElementById('semPercentReal').textContent = stats.round2.semPercent + '%';
-                            document.getElementById('shanePercentReal').textContent = stats.round2.shanePercent + '%';
-                            document.getElementById('realTotal').textContent = stats.round2.total;
-                            setTimeout(function() {
-                                var s = document.getElementById('semBarReal');
-                                s.style.width = stats.round2.semPercent + '%';
-                                s.textContent = stats.round2.semPercent > 10 ? stats.round2.semPercent + '%' : '';
-                            }, 200);
-                            setTimeout(function() {
-                                var b = document.getElementById('shaneBarReal');
-                                b.style.width = stats.round2.shanePercent + '%';
-                                b.textContent = stats.round2.shanePercent > 10 ? stats.round2.shanePercent + '%' : '';
-                            }, 500);
-                        }
-                        if (currentScreen === 'screen-final') {
-                            document.getElementById('r1LarsPercentFinal').textContent = stats.round1.larsPercent + '%';
-                            document.getElementById('r1YoussefPercentFinal').textContent = stats.round1.youssefPercent + '%';
-                            document.getElementById('r1TotalFinal').textContent = stats.round1.total;
-                            setTimeout(function() {
-                                document.getElementById('r1LarsBarFinal').style.width = stats.round1.larsPercent + '%';
-                                document.getElementById('r1YoussefBarFinal').style.width = stats.round1.youssefPercent + '%';
-                            }, 400);
-                        }
-                    });
-                }
-            } catch(e) {}
-        }
-        function typewriter(elementId, text, speed, callback) {
-            var el = document.getElementById(elementId);
-            if (!el) return;
-            el.textContent = '';
-            var i = 0;
-            function type() {
-                if (i < text.length) {
-                    el.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed || 100);
-                } else if (callback) {
-                    callback();
-                }
+        var darkScreens = ['screen-twist1','screen-twist2','screen-typenaam','screen-naamreveal','screen-twist3','screen-twist4','screen-final'];
+
+        function createParticles() {
+            var c = document.getElementById('particles');
+            for (var i = 0; i < 25; i++) {
+                var p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 20 + 's';
+                p.style.animationDuration = (12 + Math.random() * 15) + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+                c.appendChild(p);
             }
-            type();
         }
-        function goToScreen(screenId) {
+        createParticles();
+
+        var audioCtx = null;
+        function initAudio() { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} }
+        function tone(freq, dur, vol, type) {
+            if (!audioCtx || !audioEnabled) return;
+            try {
+                var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination);
+                o.type = type || 'sine';
+                o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                g.gain.setValueAtTime(vol || 0.03, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (dur || 0.3));
+                o.start(); o.stop(audioCtx.currentTime + (dur || 0.3));
+            } catch(e){}
+        }
+        function sndClick() { tone(900, 0.06, 0.02); }
+        function sndTwist() { tone(440, 0.5, 0.03); setTimeout(function(){ tone(330, 0.6, 0.025); }, 200); setTimeout(function(){ tone(220, 0.8, 0.02); }, 400); }
+        function sndReveal() { tone(523, 0.2, 0.025); setTimeout(function(){ tone(659, 0.2, 0.02); }, 120); setTimeout(function(){ tone(784, 0.3, 0.025); }, 240); }
+        function sndDeep() { tone(80, 1.0, 0.06, 'sine'); tone(60, 1.2, 0.05, 'sine'); }
+        function sndSuccess() { tone(523, 0.15, 0.03); setTimeout(function(){ tone(659, 0.15, 0.03); }, 100); setTimeout(function(){ tone(784, 0.15, 0.03); }, 200); setTimeout(function(){ tone(1047, 0.3, 0.04); }, 300); }
+
+        function toggleAudio() { audioEnabled = !audioEnabled; document.getElementById('audioBtn').textContent = audioEnabled ? '🔊' : '🔇'; }
+        function vib(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e){} }
+
+        function ripple(e) {
+            var btn = e.currentTarget;
+            var r = document.createElement('span');
+            r.className = 'btn-ripple';
+            var rect = btn.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
+            r.style.width = r.style.height = size + 'px';
+            r.style.left = (e.clientX - rect.left - size/2) + 'px';
+            r.style.top = (e.clientY - rect.top - size/2) + 'px';
+            btn.appendChild(r);
+            setTimeout(function(){ r.remove(); }, 600);
+            sndClick();
+        }
+
+        function confetti() {
+            var colors = ['#2563eb','#e11d48','#10b981','#f59e0b','#7c3aed','#ec4899'];
+            for (var i = 0; i < 40; i++) {
+                var c = document.createElement('div');
+                c.className = 'confetti-piece';
+                c.style.left = Math.random() * 100 + '%';
+                c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                c.style.animationDuration = (2 + Math.random() * 2) + 's';
+                c.style.animationDelay = Math.random() * 0.5 + 's';
+                c.style.width = (4 + Math.random() * 6) + 'px';
+                c.style.height = (4 + Math.random() * 6) + 'px';
+                c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(c);
+                setTimeout(function(el){ el.remove(); }.bind(null, c), 4000);
+            }
+        }
+
+        function goToScreen(id) {
             var screens = ['screen-welcome','screen-round1','screen-loading','screen-stats','screen-twist1','screen-twist2','screen-typenaam','screen-naamreveal','screen-twist3','screen-twist4','screen-round2','screen-round2-result','screen-final'];
             var cur = document.getElementById(currentScreen);
-            var next = document.getElementById(screenId);
+            var next = document.getElementById(id);
             if (cur) cur.classList.remove('active');
             if (next) next.classList.add('active');
-            currentScreen = screenId;
-            var idx = screens.indexOf(screenId);
-            var pct = ((idx + 1) / totalScreens) * 100;
-            document.getElementById('progressBar').style.width = pct + '%';
-            if (darkScreens.indexOf(screenId) > -1) {
-                document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
-            }
-            if (vibrateScreens.indexOf(screenId) > -1) {
-                vibrate([50, 30, 50]);
-            }
-            if (screenId === 'screen-twist1' || screenId === 'screen-twist2') {
-                setTimeout(playTwistSound, 300);
-            }
-            if (screenId === 'screen-twist4') {
-                setTimeout(playTwistSound, 500);
-            }
-            if (screenId === 'screen-naamreveal') {
-                setTimeout(playRevealSound, 400);
-            }
-            if (screenId === 'screen-round1') round1Start = Date.now();
-            if (screenId === 'screen-loading') setTimeout(function() { goToScreen('screen-stats'); }, 3000);
-            if (screenId === 'screen-stats') animateFakeStats();
-            if (screenId === 'screen-twist1') {
+            currentScreen = id;
+            var idx = screens.indexOf(id);
+            document.getElementById('progressBar').style.width = ((idx + 1) / totalScreens * 100) + '%';
+            if (darkScreens.indexOf(id) > -1) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+            if (id === 'screen-twist1' || id === 'screen-twist2') { sndDeep(); vib([50,30,50]); }
+            if (id === 'screen-twist4') { sndTwist(); vib([50,30,50]); }
+            if (id === 'screen-naamreveal') { sndReveal(); vib([40,20,40]); }
+            if (id === 'screen-final') vib([30,20,30,20,50]);
+            if (id === 'screen-round1') round1Start = Date.now();
+            if (id === 'screen-loading') setTimeout(function(){ goToScreen('screen-stats'); }, 2500);
+            if (id === 'screen-stats') animateFakeStats();
+            if (id === 'screen-twist1') {
                 document.getElementById('twist1Content').style.opacity = '0';
                 document.getElementById('wachtText').textContent = '';
-                typewriter('wachtText', 'Wacht.', 200, function() {
-                    setTimeout(function() {
-                        document.getElementById('twist1Content').style.opacity = '1';
-                    }, 400);
-                });
+                typewriter('wachtText', 'Wacht.', 220, function(){ setTimeout(function(){ document.getElementById('twist1Content').style.opacity = '1'; }, 500); });
             }
-            if (screenId === 'screen-twist3') showThinkTime();
-            if (screenId === 'screen-twist4') {
-                document.getElementById('totnuText').textContent = '';
-                setTimeout(function() { typewriter('totnuText', 'Tot nu.', 150); }, 2000);
-            }
-            if (screenId === 'screen-round2') round2Start = Date.now();
-            if (screenId === 'screen-final') showFinalComparison();
-            window.scrollTo(0, 0);
+            if (id === 'screen-twist3') showThinkTime();
+            if (id === 'screen-twist4') { document.getElementById('totnuText').textContent = ''; setTimeout(function(){ typewriter('totnuText', 'Tot nu.', 160); }, 2200); }
+            if (id === 'screen-round2') round2Start = Date.now();
+            if (id === 'screen-final') showFinal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        function selectCandidate(candidate, el) {
-            playClickSound();
+
+        function typewriter(elId, text, speed, cb) {
+            var el = document.getElementById(elId); if (!el) return;
+            el.textContent = ''; var i = 0;
+            function t() { if (i < text.length) { el.textContent += text.charAt(i); i++; setTimeout(t, speed); } else if (cb) cb(); }
+            t();
+        }
+
+        function pickRound1(c, el) {
+            sndClick(); vib([20]);
             round1ThinkTime = Date.now() - round1Start;
-            round1Choice = candidate;
-            var cards = document.querySelectorAll('#screen-round1 .candidate-card');
-            for (var i = 0; i < cards.length; i++) {
-                cards[i].style.pointerEvents = 'none';
-                cards[i].style.opacity = '0.4';
-                cards[i].style.animation = 'none';
-            }
-            el.style.opacity = '1';
-            el.style.borderColor = '#1a56db';
-            el.style.background = '#eff6ff';
-            if (socket) { try { socket.emit('vote:round1', { candidate: candidate, thinkTime: round1ThinkTime }); } catch(e) {} }
-            setTimeout(function() { goToScreen('screen-loading'); }, 800);
+            round1Choice = c;
+            var cards = document.querySelectorAll('#screen-round1 .card');
+            for (var i = 0; i < cards.length; i++) { cards[i].style.pointerEvents = 'none'; cards[i].style.opacity = '0.35'; }
+            el.style.opacity = '1'; el.classList.add('selected');
+            setTimeout(function(){ goToScreen('screen-loading'); }, 700);
         }
-        function selectCandidateRound2(candidate, el) {
-            playClickSound();
-            round2ThinkTime = Date.now() - round2Start;
-            round2Choice = candidate;
-            var cards = document.querySelectorAll('#screen-round2 .candidate-card');
-            for (var i = 0; i < cards.length; i++) {
-                cards[i].style.pointerEvents = 'none';
-                cards[i].style.opacity = '0.4';
-                cards[i].style.animation = 'none';
-            }
-            el.style.opacity = '1';
-            el.style.borderColor = '#1a56db';
-            el.style.background = '#eff6ff';
-            if (socket) { try { socket.emit('vote:round2', { candidate: candidate, thinkTime: round2ThinkTime }); } catch(e) {} }
-            setTimeout(function() {
-                document.getElementById('round2Choice').textContent = candidate === 'sem' ? 'Sem van der Berg' : 'Shane de Vries';
-                goToScreen('screen-round2-result');
-            }, 800);
-        }
+
         function animateFakeStats() {
-            setTimeout(function() { var b = document.getElementById('larsBar'); b.style.width = '68%'; b.textContent = '68%'; }, 400);
-            setTimeout(function() { var b = document.getElementById('youssefBar'); b.style.width = '32%'; b.textContent = '32%'; }, 700);
+            setTimeout(function(){ var b = document.getElementById('larsBar'); b.style.width = '68%'; b.textContent = '68%'; }, 300);
+            setTimeout(function(){ var b = document.getElementById('youssefBar'); b.style.width = '32%'; b.textContent = '32%'; }, 600);
             document.getElementById('groupLabel').innerHTML = round1Choice === 'lars' ? 'Je zat bij de <strong>meerderheid</strong>.' : 'Je zat bij de <strong>minderheid</strong>.';
         }
-        function showThinkTime() {
-            document.getElementById('userThinkTime').textContent = (round1ThinkTime / 1000).toFixed(1) + 's';
-            playRevealSound();
-        }
+
         function submitName() {
             var input = document.getElementById('userFullName');
             var name = input.value.trim();
-            if (!name) {
-                input.style.borderColor = '#e11d48';
-                input.placeholder = 'Vul iets in...';
-                input.classList.add('shake');
-                vibrate([100, 50, 100]);
-                setTimeout(function() { input.classList.remove('shake'); }, 500);
-                return;
-            }
-            playClickSound();
+            if (!name) { input.style.borderColor = 'var(--red)'; input.classList.add('shake'); vib([100,50,100]); setTimeout(function(){ input.classList.remove('shake'); }, 600); return; }
             userName = name;
             document.getElementById('displayName').textContent = name;
             goToScreen('screen-naamreveal');
         }
-        function showFinalComparison() {
-            document.getElementById('r1TimeFinal').textContent = (round1ThinkTime / 1000).toFixed(1) + 's bedenktijd';
-            document.getElementById('r2TimeFinal').textContent = (round2ThinkTime / 1000).toFixed(1) + 's bedenktijd';
+
+        function showThinkTime() { document.getElementById('userThinkTime').textContent = (round1ThinkTime / 1000).toFixed(1) + 's'; sndReveal(); }
+
+        function pickRound2(c, el) {
+            sndClick(); vib([20]);
+            round2ThinkTime = Date.now() - round2Start;
+            round2Choice = c;
+            var cards = document.querySelectorAll('#screen-round2 .card');
+            for (var i = 0; i < cards.length; i++) { cards[i].style.pointerEvents = 'none'; cards[i].style.opacity = '0.35'; }
+            el.style.opacity = '1'; el.classList.add('selected');
+            setTimeout(function(){ document.getElementById('round2Choice').textContent = c === 'sem' ? 'Sem van der Berg' : 'Shane de Vries'; goToScreen('screen-round2-result'); }, 700);
+        }
+
+        function showRound2Results() {
+            var semP = 23, shaneP = 77, total = 28;
+            document.getElementById('semPct').textContent = semP + '%';
+            document.getElementById('shanePct').textContent = shaneP + '%';
+            document.getElementById('realTotal').textContent = total;
+            setTimeout(function(){ var b = document.getElementById('semBar'); b.style.width = semP + '%'; b.textContent = semP + '%'; }, 200);
+            setTimeout(function(){ var b = document.getElementById('shaneBar'); b.style.width = shaneP + '%'; b.textContent = shaneP + '%'; }, 500);
+        }
+
+        function showFinal() {
+            document.getElementById('r1TimeFinal').textContent = (round1ThinkTime / 1000).toFixed(1) + 's';
+            document.getElementById('r2TimeFinal').textContent = (round2ThinkTime / 1000).toFixed(1) + 's';
+            document.getElementById('fasterRound').textContent = round1ThinkTime <= round2ThinkTime ? 'Ronde 1' : 'Ronde 2';
+            document.getElementById('flagChoice').textContent = userFlag ? flagNames[userFlag] : '—';
             document.getElementById('flagResult').style.display = 'none';
             document.getElementById('finalContinue').style.display = 'none';
-            var flags = document.querySelectorAll('.flag-option');
-            for (var i = 0; i < flags.length; i++) {
-                flags[i].classList.remove('wrong', 'correct');
-                flags[i].style.pointerEvents = 'auto';
-            }
+            var flags = document.querySelectorAll('.flag-btn');
+            for (var i = 0; i < flags.length; i++) { flags[i].classList.remove('wrong','correct'); flags[i].style.pointerEvents = 'auto'; }
+            showRound2Results();
+            setTimeout(function(){
+                document.getElementById('r1LarsPct').textContent = '64%';
+                document.getElementById('r1YoussefPct').textContent = '36%';
+                document.getElementById('r1Total').textContent = '28';
+                setTimeout(function(){ document.getElementById('r1LarsBar').style.width = '64%'; }, 400);
+                setTimeout(function(){ document.getElementById('r1YoussefBar').style.width = '36%'; }, 600);
+            }, 300);
         }
-        function selectFlag(flag) {
-            playTwistSound();
-            vibrate([30, 20, 30, 20, 60]);
-            var flags = document.querySelectorAll('.flag-option');
-            for (var i = 0; i < flags.length; i++) { flags[i].style.pointerEvents = 'none'; }
+
+        function pickFlag(flag, el) {
+            userFlag = flag; sndTwist(); vib([30,20,30,20,60]);
+            var flags = document.querySelectorAll('.flag-btn');
+            for (var i = 0; i < flags.length; i++) flags[i].style.pointerEvents = 'none';
             var resultDiv = document.getElementById('flagResult');
             var resultText = document.getElementById('flagResultText');
             var continueDiv = document.getElementById('finalContinue');
             if (flag === 'nl') {
-                flags[3].classList.add('correct');
-                resultText.innerHTML = '<p style="font-size: 15px; line-height: 1.7;"><strong>Waarschijnlijk niet de meest logische keuze he?</strong><br><br>Maar Shane is gewoon Nederlands. Zijn ouders kozen een naam die ze mooi vonden. Geen etnische betekenis, geen culturele reden.<br><br><strong>Gewoon... een naam.</strong><br><br>En toch dacht je waarschijnlijk eerst aan iets anders. Want dat is wat namen met ons doen — ze vertellen een verhaal voordat we er een kennen.</p>';
+                el.classList.add('correct'); sndSuccess(); confetti();
+                resultText.innerHTML = '<p style="font-size:15px;line-height:1.7;"><strong>Waarschijnlijk niet de meest logische keuze he?</strong><br><br>Maar Shane is gewoon Nederlands. Zijn ouders kozen een naam die ze mooi vonden. Geen etnische betekenis, geen culturele reden.<br><br><strong>Gewoon... een naam.</strong><br><br>En toch dacht je waarschijnlijk eerst aan iets anders. Want dat is wat namen met ons doen — ze vertellen een verhaal voordat we er een kennen.</p>';
             } else {
-                var selectedIdx = flag === 'ma' ? 0 : flag === 'tr' ? 1 : 2;
-                flags[selectedIdx].classList.add('wrong');
-                flags[3].classList.add('correct');
-                resultText.innerHTML = '<p style="font-size: 15px; line-height: 1.7;"><strong>Had je niet verwacht he?</strong><br><br>Shane is Nederlands. Zijn ouders kozen gewoon een andere naam.<br><br>Geen etnische betekenis. Geen culturele reden.<br><br><strong>Gewoon... een naam.</strong><br><br>En toch vertelde die naam je een verhaal. Want dat is wat namen met ons doen — ze vertellen een verhaal voordat we er een kennen.</p>';
+                el.classList.add('wrong'); document.getElementById('flag-nl').classList.add('correct'); sndSuccess(); confetti();
+                resultText.innerHTML = '<p style="font-size:15px;line-height:1.7;"><strong>Had je niet verwacht he?</strong><br><br>Shane is Nederlands. Zijn ouders kozen gewoon een andere naam.<br><br>Geen etnische betekenis. Geen culturele reden.<br><br><strong>Gewoon... een naam.</strong><br><br>En toch vertelde die naam je een verhaal. Want dat is wat namen met ons doen — ze vertellen een verhaal voordat we er een kennen.</p>';
             }
             resultDiv.style.display = 'block';
-            setTimeout(function() { continueDiv.style.display = 'block'; }, 800);
+            setTimeout(function(){ continueDiv.style.display = 'block'; }, 900);
         }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && currentScreen === 'screen-typenaam') submitName();
-        });
-        document.addEventListener('click', function() {
-            if (!audioCtx) initAudio();
-        }, { once: true });
-        document.addEventListener('touchstart', function() {
-            if (!audioCtx) initAudio();
-        }, { once: true });
-        window.addEventListener('load', function() { initSocket(); });
+
+        document.addEventListener('keydown', function(e){ if (e.key === 'Enter' && currentScreen === 'screen-typenaam') submitName(); });
+        document.addEventListener('click', function(){ if (!audioCtx) initAudio(); }, { once: true });
+        document.addEventListener('touchstart', function(){ if (!audioCtx) initAudio(); }, { once: true });
     </script>
-    <script src="/socket.io/socket.io.js" onerror="console.log('Offline mode')"></script>
+    <script src="/socket.io/socket.io.js" onerror="console.log('offline')"></script>
 </body>
 </html>
